@@ -7,7 +7,9 @@ from flask import Flask, Response, jsonify
 from app import newsfeed
 from app.utils.file_loader import load_json_files
 from app.utils.redis import REDIS_CLIENT
-
+for x in newsfeed.get_featured_news():
+    print()
+    print(x.publish_date)
 
 def create_app():
     """Create a Flask app instance."""

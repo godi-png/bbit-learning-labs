@@ -2,6 +2,9 @@
 
 from dataclasses import dataclass
 from datetime import datetime
+import json
+
+from app.utils.redis import REDIS_CLIENT
 
 
 @dataclass
@@ -21,11 +24,15 @@ def get_all_news() -> list[Article]:
     # 1. Use Redis client to fetch all articles
     # 2. Format the data into articles
     # 3. Return the as a list of articles sorted by most recent
-    return []
-
+    articles_json = REDIS_CLIENT.get_entry("all_articles")
+    article_list = list()
+    for x in articles_json:
+        article_list.append(Article(x["author"], x["title"], x["text"], x["published"], x["thread"]["main_image"], x["url"]))
+    return article_list
 
 def get_featured_news() -> Article | None:
     """Get the featured news article from the datastore."""
     # 1. Get all the articles
     # 2. Select and return the featured article
-    return None
+    sorted_articles = sorted(get_all_news(), key = lambda x: datetime.fromisoformat(x.publish_date))
+    return sorted_articles
